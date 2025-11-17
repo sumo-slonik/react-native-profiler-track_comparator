@@ -24,7 +24,9 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "output": "static",
+      "publicPath": "/react-native-profiler-track_comparator/",
+      "bundler": "metro"
     }
   }
 }
