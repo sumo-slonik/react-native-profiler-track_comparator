@@ -24,7 +24,7 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "output": "static",
+      "output": "single",
       "publicPath": "/react-native-profiler-track_comparator/",
       "bundler": "metro"
     }
