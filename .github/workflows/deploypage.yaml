@@ -20,7 +20,7 @@ jobs:
         run: npm install
 
       - name: Build
-        run: npm run expo export --platform web
+        run: npm run web-build --platform web
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
