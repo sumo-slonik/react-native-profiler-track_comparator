@@ -19,6 +19,7 @@ import {
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import * as Print from 'expo-print';
+import JsonFileInput from "./JsonFileInput";
 
 // --- TYPY DANYCH (Bez zmian) ---
 type AggregatedTimes = {
@@ -606,67 +607,6 @@ interface JsonFileInputProps {
   ) => void;
   onError: (message: string, index: number) => void;
 }
-
-const JsonFileInput: React.FC<JsonFileInputProps> = React.memo(
-    ({ index, onFilesLoaded, onError }) => {
-      const readSingleFile = async (
-          asset: DocumentPicker.DocumentPickerAsset
-      ): Promise<ProfilerFile> => {
-        // ZMIANA: Używamy FileSystem.readAsStringAsync
-        const content = await FileSystem.readAsStringAsync(asset.uri, {
-          encoding: FileSystem.EncodingType.UTF8,
-        });
-
-        try {
-          const parsedData: any = JSON.parse(content);
-          if (
-              parsedData.version === undefined ||
-              parsedData.dataForRoots === undefined
-          ) {
-            throw new Error(
-                `Brak kluczowych pól 'version' lub 'dataForRoots' w pliku ${asset.name}.`
-            );
-          }
-          return parsedData as ProfilerFile;
-        } catch (err) {
-          throw new Error(`Błąd parsowania JSON w pliku ${asset.name}.`);
-        }
-      };
-
-      // ZMIANA: Cała logika `handleFileChange` zastąpiona przez `handlePickDocument`
-      const handlePickDocument = useCallback(async () => {
-        try {
-          const pickerResult = await DocumentPicker.getDocumentAsync({
-            type: 'application/json',
-            multiple: true,
-          });
-
-          if (pickerResult.type === 'success' && pickerResult.assets) {
-            const assets = pickerResult.assets;
-            const readPromises = assets.map(readSingleFile);
-            const fileNames = assets.map((f) => f.name);
-
-            const dataArray = await Promise.all(readPromises);
-            onFilesLoaded(dataArray, fileNames, index);
-          } else {
-            onError('Nie wybrano żadnego pliku.', index);
-          }
-        } catch (error) {
-          onError((error as Error).message, index);
-        }
-      }, [index, onFilesLoaded, onError]);
-
-      // ZMIANA: JSX jest teraz przyciskiem, a nie inputem
-      return (
-          <View style={fileInputStyles.wrapper}>
-            <Text style={fileInputStyles.label}>Wczytaj Plik(i)</Text>
-            <Pressable style={fileInputStyles.button} onPress={handlePickDocument}>
-              <Text style={fileInputStyles.buttonText}>Wybierz pliki .json</Text>
-            </Pressable>
-          </View>
-      );
-    }
-);
 
 // Style dla JsonFileInput
 const fileInputStyles = StyleSheet.create({
