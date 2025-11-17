@@ -25,5 +25,6 @@
     "@types/react": "~19.1.0",
     "typescript": "~5.9.2"
   },
-  "private": true
+  "private": true,
+  "homepage": "https://sumo-slonik.github.io/react-native-profiler-track_comparator/"
 }
