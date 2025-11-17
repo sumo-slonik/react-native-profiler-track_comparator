@@ -22,6 +22,17 @@ jobs:
       - name: Build
         run: npm run web-build
 
+      - name: Fix Index HTML path
+        run: |
+          REPO_NAME=react-native-profiler-track_comparator
+          INDEX_FILE=dist/index.html
+          # Użycie 'sed' do zamiany absolutnej ścieżki (/...) na ścieżkę z prefiksem repozytorium (/repo_name/...)
+          # Zamienia: "/_expo/static/" 
+          # Na:      "/react-native-profiler-track_comparator/_expo/static/"
+          sed -i "s|/_expo/static/|/$REPO_NAME/_expo/static/|g" $INDEX_FILE
+          # Wyświetl poprawiony plik (opcjonalnie, do debugowania)
+          cat $INDEX_FILE
+
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
