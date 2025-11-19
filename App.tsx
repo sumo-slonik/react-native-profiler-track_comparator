@@ -70,7 +70,7 @@ const App: React.FC = () => {
   return (
       <ScrollView style={appStyles.container}>
         <View style={appStyles.header}>
-          <Text style={appStyles.headerTitle}>React Profiler Trace Analyzer</Text>
+          <Text style={appStyles.headerTitle}>React Native Profiler Trace Analyzer</Text>
           <Text style={appStyles.headerSubtitle}>
             Tool for analyzing and comparing render performance
           </Text>
