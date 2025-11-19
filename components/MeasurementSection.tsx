@@ -78,43 +78,45 @@ const MeasurementSection: React.FC<MeasurementSectionProps> = ({
                     />
                 )}
 
-                <View style={styles.summaryWrapper}>
-                    <View style={styles.summaryHeader}>
-                        <Text style={styles.summaryTitle}>Summary</Text>
+                {hasFiles && (
+                    <View style={styles.summaryWrapper}>
+                        <View style={styles.summaryHeader}>
+                            <Text style={styles.summaryTitle}>Summary</Text>
 
-                        {hasFiles && (
-                            <TouchableOpacity onPress={() => onClearFiles(index)}>
-                                <Text style={styles.clearFilesText}>Upload new files</Text>
-                            </TouchableOpacity>
+                            {hasFiles && (
+                                <TouchableOpacity onPress={() => onClearFiles(index)}>
+                                    <Text style={styles.clearFilesText}>Upload new files</Text>
+                                </TouchableOpacity>
+                            )}
+                        </View>
+
+                        {fileEntry.loadingError && (
+                            <Text style={styles.errorText}>
+                                ❌ Loading error: {fileEntry.loadingError}
+                            </Text>
+                        )}
+
+                        {hasFiles && !fileEntry.loadingError && (
+                            <View style={styles.loadedInfo}>
+                                <Text style={{ fontWeight: 'bold' }}>
+                                    ✅ Loaded: {fileEntry.fileNames.length} measurement(s).
+                                </Text>
+                                <FilesList fileEntry={fileEntry} />
+                            </View>
+                        )}
+
+                        {fileEntry.averageSummary && (
+                            analysisMode === 'total' ? (
+                                <SectionChart fileEntry={fileEntry} />
+                            ) : (
+                                <ComponentRankingList
+                                    fileEntry={fileEntry}
+                                    metricType={metricType}
+                                />
+                            )
                         )}
                     </View>
-
-                    {fileEntry.loadingError && (
-                        <Text style={styles.errorText}>
-                            ❌ Loading error: {fileEntry.loadingError}
-                        </Text>
-                    )}
-
-                    {hasFiles && !fileEntry.loadingError && (
-                        <View style={styles.loadedInfo}>
-                            <Text style={{ fontWeight: 'bold' }}>
-                                ✅ Loaded: {fileEntry.fileNames.length} measurement(s).
-                            </Text>
-                            <FilesList fileEntry={fileEntry} />
-                        </View>
-                    )}
-
-                    {fileEntry.averageSummary && (
-                        analysisMode === 'total' ? (
-                            <SectionChart fileEntry={fileEntry} />
-                        ) : (
-                            <ComponentRankingList
-                                fileEntry={fileEntry}
-                                metricType={metricType}
-                            />
-                        )
-                    )}
-                </View>
+                )}
             </View>
         </View>
     );
