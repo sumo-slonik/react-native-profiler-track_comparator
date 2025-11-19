@@ -1,8 +1,6 @@
 import React, { useCallback, useRef } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
-import * as DocumentPicker from 'expo-document-picker';
-import {ProfilerFile} from "./types/FileEntry";
-
+import { ProfilerFile } from "../types/FileEntry";
 
 interface JsonFileInputProps {
     index: number;
@@ -23,11 +21,10 @@ const JsonFileInput: React.FC<JsonFileInputProps> = React.memo(
             const files = event.target.files;
 
             if (!files || files.length === 0) {
-                onError('Nie wybrano żadnego pliku.', index);
+                onError('No file selected.', index);
                 return;
             }
 
-            const assets: DocumentPicker.DocumentPickerAsset[] = [];
             const fileNames: string[] = [];
 
             try {
@@ -42,16 +39,16 @@ const JsonFileInput: React.FC<JsonFileInputProps> = React.memo(
 
                                 const parsedData: any = JSON.parse(content);
                                 if (parsedData.version === undefined || parsedData.dataForRoots === undefined) {
-                                    throw new Error(`Brak kluczowych pól 'version' lub 'dataForRoots' w pliku ${file.name}.`);
+                                    throw new Error(`Missing key fields 'version' or 'dataForRoots' in file ${file.name}.`);
                                 }
                                 resolve(parsedData as ProfilerFile);
                             } catch (err) {
-                                reject(`Błąd parsowania JSON w pliku ${file.name}.`);
+                                reject(`JSON parsing error in file ${file.name}.`);
                             }
                         };
 
-                        reader.onerror = () => reject(`Błąd odczytu pliku ${file.name}.`);
-                        reader.readAsText(file); // Odczyt pliku jako tekst
+                        reader.onerror = () => reject(`Error reading file ${file.name}.`);
+                        reader.readAsText(file);
                     });
                 });
 
@@ -70,7 +67,7 @@ const JsonFileInput: React.FC<JsonFileInputProps> = React.memo(
 
         return (
             <View style={fileInputStyles.wrapper}>
-                <Text style={fileInputStyles.label}>Wczytaj Plik(i)</Text>
+                <Text style={fileInputStyles.label}>Load File(s)</Text>
 
                 <input
                     ref={fileInputRef}
@@ -83,7 +80,7 @@ const JsonFileInput: React.FC<JsonFileInputProps> = React.memo(
                 />
 
                 <Pressable style={fileInputStyles.button} onPress={handlePress}>
-                    <Text style={fileInputStyles.buttonText}>Wybierz pliki .json</Text>
+                    <Text style={fileInputStyles.buttonText}>Select .json files</Text>
                 </Pressable>
             </View>
         );

@@ -55,7 +55,7 @@ const RemoveSection = ({isDisabled,handleRemoveSection}:{isDisabled:boolean,hand
             onHoverIn={() => setRemoveHover(true)}
             onHoverOut={() => setRemoveHover(false)}
         >
-            <Text style={appStyles.buttonText}>- Usuń Ostatnią</Text>
+            <Text style={appStyles.buttonText}>- Remove Last</Text>
         </Pressable>
     )
 }

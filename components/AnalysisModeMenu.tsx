@@ -49,7 +49,7 @@ const AnalysisModeMenu: React.FC<AnalysisModeMenuProps> = ({
 
     return (
         <View style={styles.container}>
-            <Text style={styles.label}>Tryb Analizy:</Text>
+            <Text style={styles.label}>Analysis Mode:</Text>
 
             <View style={styles.modeSwitch}>
                 <TouchableOpacity
@@ -57,7 +57,7 @@ const AnalysisModeMenu: React.FC<AnalysisModeMenuProps> = ({
                     onPress={() => onModeChange('total')}
                 >
                     <Text style={[styles.modeText, mode === 'total' && styles.modeTextActive]}>
-                        Suma Totalna (Commit)
+                        Total commits
                     </Text>
                 </TouchableOpacity>
 
@@ -66,7 +66,7 @@ const AnalysisModeMenu: React.FC<AnalysisModeMenuProps> = ({
                     onPress={() => onModeChange('component')}
                 >
                     <Text style={[styles.modeText, mode === 'component' && styles.modeTextActive]}>
-                        Per Komponent
+                        Per Component
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -74,21 +74,19 @@ const AnalysisModeMenu: React.FC<AnalysisModeMenuProps> = ({
             {mode === 'component' && (
                 <View style={styles.componentOptions}>
 
-                    {/* ComboBox / Przycisk otwierający Modal */}
                     <View style={styles.controlGroup}>
-                        <Text style={styles.subLabel}>Wybierz Komponent:</Text>
+                        <Text style={styles.subLabel}>Select Component:</Text>
                         <TouchableOpacity
                             style={styles.comboBox}
                             onPress={() => setModalVisible(true)}
                         >
                             <Text style={styles.comboBoxText}>
-                                {selectedComponent || '-- Kliknij, aby wybrać --'}
+                                {selectedComponent || '-- Click to select --'}
                             </Text>
                             <Text style={styles.comboBoxArrow}>▼</Text>
                         </TouchableOpacity>
                     </View>
 
-                    {/* Wybór Metryki */}
                     <View style={styles.radioRow}>
                         <RadioButton
                             label="Total Actual Duration"
@@ -113,15 +111,15 @@ const AnalysisModeMenu: React.FC<AnalysisModeMenuProps> = ({
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
                         <View style={styles.modalHeader}>
-                            <Text style={styles.modalTitle}>Wybierz Komponent</Text>
+                            <Text style={styles.modalTitle}>Select Component</Text>
                             <TouchableOpacity onPress={() => setModalVisible(false)}>
-                                <Text style={styles.closeButton}>Zamknij</Text>
+                                <Text style={styles.closeButton}>Close</Text>
                             </TouchableOpacity>
                         </View>
 
                         <TextInput
                             style={styles.searchInput}
-                            placeholder="Szukaj..."
+                            placeholder="Search..."
                             value={searchText}
                             onChangeText={setSearchText}
                             autoFocus={false}
@@ -148,7 +146,7 @@ const AnalysisModeMenu: React.FC<AnalysisModeMenuProps> = ({
                                 </TouchableOpacity>
                             )}
                             ListEmptyComponent={
-                                <Text style={styles.emptyText}>Nie znaleziono komponentów</Text>
+                                <Text style={styles.emptyText}>No components found</Text>
                             }
                         />
                     </View>
@@ -284,7 +282,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#374151',
     },
-    // Style Modala
     modalOverlay: {
         flex: 1,
         backgroundColor: 'rgba(0,0,0,0.5)',

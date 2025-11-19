@@ -75,10 +75,10 @@ const FilesList = ({ fileEntry }: { fileEntry: FileCommitData }) => {
                 style={styles.collapsibleHeader}
             >
                 <Text style={styles.collapsibleTitle}>
-                    Pliki ({fileEntry.fileStats.length})
+                    Files ({fileEntry.fileStats.length})
                 </Text>
                 <Text style={styles.collapsibleIcon}>
-                    {expanded ? '▲ Zwiń' : '▼ Rozwiń'}
+                    {expanded ? '▲ Collapse' : '▼ Expand'}
                 </Text>
             </TouchableOpacity>
 
@@ -91,7 +91,7 @@ const FilesList = ({ fileEntry }: { fileEntry: FileCommitData }) => {
                             </Text>
                             <View style={styles.fileStatMetrics}>
                                 <Text style={styles.fileStatCommits}>
-                                    {stats.commitCount} commity
+                                    {stats.commitCount} commits
                                 </Text>
                                 <Text style={styles.fileStatSeparator}> / </Text>
                                 <Text style={styles.fileStatDuration}>

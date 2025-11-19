@@ -19,7 +19,7 @@ const ComponentRankingList: React.FC<ComponentRankingListProps> = ({
         : fileEntry.fiberSelfDurationsTotal;
 
     const sortedComponents = Array.from(dataMap.entries())
-        .sort((a, b) => b[1] - a[1]); // Sortuj po czasie (value)
+        .sort((a, b) => b[1] - a[1]);
 
     const displayedComponents = showAll
         ? sortedComponents
@@ -28,7 +28,7 @@ const ComponentRankingList: React.FC<ComponentRankingListProps> = ({
     if (sortedComponents.length === 0) {
         return (
             <View style={styles.wrapper}>
-                <Text style={styles.emptyText}>Brak danych komponentów.</Text>
+                <Text style={styles.emptyText}>No component data available.</Text>
             </View>
         );
     }
@@ -40,8 +40,8 @@ const ComponentRankingList: React.FC<ComponentRankingListProps> = ({
             </Text>
 
             <View style={styles.headerRow}>
-                <Text style={[styles.headerText, { flex: 1 }]}>Komponent</Text>
-                <Text style={styles.headerText}>Czas (ms)</Text>
+                <Text style={[styles.headerText, { flex: 1 }]}>Component</Text>
+                <Text style={styles.headerText}>Time (ms)</Text>
             </View>
 
             {displayedComponents.map(([name, time], index) => (
@@ -63,8 +63,8 @@ const ComponentRankingList: React.FC<ComponentRankingListProps> = ({
                 >
                     <Text style={styles.footerButtonText}>
                         {showAll
-                            ? 'Pokaż mniej (Top 5)'
-                            : `Pokaż wszystkie (${sortedComponents.length})`}
+                            ? 'Show less (Top 5)'
+                            : `Show all (${sortedComponents.length})`}
                     </Text>
                 </TouchableOpacity>
             )}
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
         borderBottomColor: '#f1f5f9',
     },
     rank: {
-        width: 30, // Nieco szersze dla liczb > 9
+        width: 30,
         fontSize: 12,
         fontWeight: 'bold',
         color: '#94a3b8',

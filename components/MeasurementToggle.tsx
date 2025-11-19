@@ -20,7 +20,7 @@ const MeasurementToggle: React.FC<MeasurementToggleProps> = ({
                     {checked && <Text style={styles.checkboxCheck}>✓</Text>}
                 </View>
                 <Text style={styles.toggleText}>
-                    Pokaż/Ukryj liczbę pomiarów na wykresie
+                    Show/Hide measurement count on chart
                 </Text>
             </Pressable>
         </View>

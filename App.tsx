@@ -10,7 +10,6 @@ import {
 import { useProfilerFiles } from './hooks/useProfilerFiles';
 import MultiGroupComparisonChart from './components/MultiGroupComparisonChart';
 import MeasurementSection from './components/MeasurementSection';
-import MeasurementToggle from './components/MeasurementToggle';
 import DashboardControls from './components/DashboardControls';
 import ComparisonTable from './components/ComparisonTable';
 import AnalysisModeMenu, { AnalysisMode, MetricType } from './components/AnalysisModeMenu';
@@ -71,9 +70,9 @@ const App: React.FC = () => {
   return (
       <ScrollView style={appStyles.container}>
         <View style={appStyles.header}>
-          <Text style={appStyles.headerTitle}>React Profiler Trace Analyzer</Text>
+          <Text style={appStyles.headerTitle}>React Native Profiler Trace Analyzer</Text>
           <Text style={appStyles.headerSubtitle}>
-            Narzędzie do analizy i porównywania wydajności renderowania
+            Tool for analyzing and comparing render performance
           </Text>
         </View>
 
@@ -119,8 +118,6 @@ const App: React.FC = () => {
               scrollEnabled={false}
           />
 
-          {/* [2] Logika warunkowa dla widoku wyników */}
-
           {analysisMode === 'total' ? (
               <>
                 <ComparisonTable
@@ -136,13 +133,13 @@ const App: React.FC = () => {
           ) : (
 
               <ComponentAnalysisTable
-            files={files}
-            selectedComponent={selectedComponent}
-            metricType={metricType}
-            mainSectionId={mainSectionId}
-            onSetMain={setMainSectionId}
-            />
-            )}
+                  files={files}
+                  selectedComponent={selectedComponent}
+                  metricType={metricType}
+                  mainSectionId={mainSectionId}
+                  onSetMain={setMainSectionId}
+              />
+          )}
 
         </View>
 
