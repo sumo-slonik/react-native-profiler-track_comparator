@@ -37,18 +37,26 @@ export const useProfilerFiles = () => {
         });
     }, []);
 
-    const removeSection = useCallback(() => {
+    const removeSection = useCallback((idToRemove: number) => {
+        setFiles((prevFiles) => prevFiles.filter((f) => f.id !== idToRemove));
+    }, []);
+
+    const clearFiles = useCallback((index: number) => {
         setFiles((prevFiles) => {
-            if (prevFiles.length > 0) {
-                const updatedFiles = prevFiles.slice(0, -1).map((f, index) => ({
-                    ...f,
-                    groupName: f.groupName.startsWith('Grupa ')
-                        ? `Grupa ${index + 1}`
-                        : f.groupName,
-                }));
-                return updatedFiles;
-            }
-            return prevFiles;
+            const newFiles = [...prevFiles];
+            newFiles[index] = {
+                ...newFiles[index],
+                fileNames: [],
+                profilerDataArray: [],
+                averageSummary: null,
+                loadingError: null,
+                fileStats: [],
+                availableComponentNames: [],
+                componentMap: new Map(),
+                fiberActualDurationsTotal: new Map(),
+                fiberSelfDurationsTotal: new Map(),
+            };
+            return newFiles;
         });
     }, []);
 
@@ -134,6 +142,7 @@ export const useProfilerFiles = () => {
         files,
         addSection,
         removeSection,
+        clearFiles,
         updateGroupName,
         processLoadedFiles,
         reportError,

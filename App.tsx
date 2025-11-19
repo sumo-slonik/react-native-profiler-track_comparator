@@ -24,6 +24,7 @@ const App: React.FC = () => {
     updateGroupName,
     processLoadedFiles,
     reportError,
+    clearFiles
   } = useProfilerFiles();
 
   const [analysisMode, setAnalysisMode] = useState<AnalysisMode>('total');
@@ -60,6 +61,13 @@ const App: React.FC = () => {
     return Array.from(nameSet).sort();
   }, [files, metricType]);
 
+  const handleRemoveLastSection = () => {
+    if (files.length > 0) {
+      const lastId = files[files.length - 1].id;
+      removeSection(lastId);
+    }
+  };
+
   return (
       <ScrollView style={appStyles.container}>
         <View style={appStyles.header}>
@@ -84,7 +92,7 @@ const App: React.FC = () => {
           <DashboardControls
               count={files.length}
               onAdd={addSection}
-              onRemove={removeSection}
+              onRemove={handleRemoveLastSection}
               isRemoveDisabled={isDisabled}
           />
 
@@ -99,7 +107,10 @@ const App: React.FC = () => {
                       onFilesLoaded={processLoadedFiles}
                       onError={reportError}
                       analysisMode={analysisMode}
+                      onRemoveSection={removeSection}
+                      onClearFiles={clearFiles}
                       metricType={metricType}
+                      isRemovable={files.length > 1}
                   />
               )}
               keyExtractor={(item) => item.id.toString()}
