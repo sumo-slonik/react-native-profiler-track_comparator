@@ -20,14 +20,15 @@ type FileStats = {
     totalDuration: number;
     commitCount: number;
 };
+
 type FileCommitData = {
     id: number;
     groupName: string;
     fileNames: string[];
     profilerDataArray: ProfilerFile[];
-    averageSummary: AggregatedTimes;
+    averageSummary: AggregatedTimes | null;
     loadingError: string | null;
     fileStats: FileStats[];
-};
+}
 
 export type {AggregatedTimes, CommitDataEntry, RootData, ProfilerFile, FileStats, FileCommitData};

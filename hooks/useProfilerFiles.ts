@@ -7,7 +7,11 @@ const createNewFileEntry = (id: number, index: number): FileCommitData => ({
     groupName: `Grupa ${index + 1}`,
     fileNames: [],
     profilerDataArray: [],
-    averageSummary: null,
+    averageSummary: {
+        totalDuration: 0,
+        totalEffectDuration: 0,
+        totalPassiveEffectDuration: 0,
+    },
     loadingError: null,
     fileStats: [],
 });

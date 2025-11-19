@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, DimensionValue } from 'react-native'; // 1. Dodano import DimensionValue
 import { AggregatedTimes, FileCommitData } from '../types/FileEntry';
 import StackedBar, { CHART_COLORS } from './StackedBar';
 
@@ -48,14 +48,18 @@ const CommitTimeChart: React.FC<CommitTimeChartProps> = ({ data, title }) => {
         totalDuration - totalEffects
     );
 
-    // Obliczamy procenty dla słupka (w tym widoku słupek zawsze ma 100% wysokości kontenera)
+    // 2. Tutaj dodajemy rzutowanie "as DimensionValue"
     const renderHeight = `${
         (totalRenderAndCommitDuration / totalDuration) * 100 || 0
-    }%`;
-    const layoutHeight = `${(totalEffectDuration / totalDuration) * 100 || 0}%`;
+    }%` as DimensionValue;
+
+    const layoutHeight = `${
+        (totalEffectDuration / totalDuration) * 100 || 0
+    }%` as DimensionValue;
+
     const passiveHeight = `${
         (totalPassiveEffectDuration / totalDuration) * 100 || 0
-    }%`;
+    }%` as DimensionValue;
 
     return (
         <View style={styles.chartWrapper}>
@@ -120,7 +124,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#e5e7eb',
         borderRadius: 8,
-        marginTop: 0, // Zmienione z 16, bo tabela ma margin
+        marginTop: 0,
         backgroundColor: '#ffffff',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },

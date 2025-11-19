@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, DimensionValue } from 'react-native'; // 1. Dodaj DimensionValue
 import { FileCommitData, ProfilerFile } from '../types/FileEntry';
 import GroupNameInput from './GroupNameInput';
 import FilesList from './FilesList';
@@ -23,7 +23,11 @@ const MeasurementSection: React.FC<MeasurementSectionProps> = ({
                                                                    onFilesLoaded,
                                                                    onError,
                                                                }) => {
-    const itemWidth = numColumns > 1 ? `${(100 / numColumns).toFixed(2)}%` : '100%';
+    // 2. Poprawiona linijka z rzutowaniem "as DimensionValue"
+    const itemWidth = (numColumns > 1
+        ? `${(100 / numColumns).toFixed(2)}%`
+        : '100%') as DimensionValue;
+
     const itemPadding = numColumns > 1 ? 12 : 0;
 
     return (
@@ -74,7 +78,7 @@ const MeasurementSection: React.FC<MeasurementSectionProps> = ({
 const styles = StyleSheet.create({
     sectionWrapper: {
         marginBottom: 24,
-        minHeight: 1, // Potrzebne dla FlatList na webie
+        minHeight: 1,
     },
     sectionContent: {
         backgroundColor: '#ffffff',
@@ -86,7 +90,7 @@ const styles = StyleSheet.create({
         shadowRadius: 6,
         elevation: 4,
         borderTopWidth: 4,
-        borderTopColor: '#a855f7', // border-violet-500
+        borderTopColor: '#a855f7',
     },
     summaryWrapper: {
         marginTop: 16,

@@ -4,7 +4,7 @@ import { View, StyleSheet, DimensionValue } from 'react-native';
 interface StackedBarProps {
     totalHeight: number; // Wysokość całkowita kontenera słupka
     width?: number;
-    renderHeight: DimensionValue; // np. '30%' lub 50
+    renderHeight: DimensionValue;
     layoutHeight: DimensionValue;
     passiveHeight: DimensionValue;
     backgroundColor?: string;
