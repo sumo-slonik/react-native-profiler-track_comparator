@@ -1,18 +1,21 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { FileCommitData } from '../types/FileEntry';
 import StackedBar, { CHART_COLORS } from './StackedBar';
+import MeasurementToggle from "./MeasurementToggle";
 
 interface MultiGroupComparisonChartProps {
     files: FileCommitData[];
-    showMeasurementCount: boolean;
 }
 
 const MultiGroupComparisonChart: React.FC<MultiGroupComparisonChartProps> = ({
                                                                                  files,
-                                                                                 showMeasurementCount,
                                                                              }) => {
-    const totalChartHeight = 200;
+
+    const [showMeasurementCount, setShowMeasurementCount] = useState(true);
+    const [isVisible, setIsVisible] = useState(false);
+
+    const totalChartHeight = 200; //
 
     const validFiles = files.filter(
         (f) =>
@@ -52,98 +55,140 @@ const MultiGroupComparisonChart: React.FC<MultiGroupComparisonChartProps> = ({
 
     return (
         <View style={styles.wrapper}>
-            <Text style={styles.title}>
-                Zbiorcze Porównanie Średnich Czasów Commitów
-            </Text>
-
-            <View style={styles.legend}>
-                <LegendItem color={CHART_COLORS.render} label="Render + Commit" />
-                <LegendItem color={CHART_COLORS.layout} label="Layout Effects" />
-                <LegendItem color={CHART_COLORS.passive} label="Passive Effects" />
-            </View>
-
-            <View style={styles.chartContainer}>
-                <View style={styles.yAxis}>
-                    {yAxisMarkers.map((marker, index) => (
-                        <View
-                            key={index}
-                            style={[
-                                styles.yAxisMarker,
-                                {
-                                    bottom: marker.bottom,
-                                    borderBottomWidth:
-                                        index < yAxisMarkers.length - 1 && index > 0 ? 1 : 0,
-                                },
-                            ]}
-                        >
-                            <Text style={styles.yAxisText}>
-                                {marker.value.toFixed(0)} ms
-                            </Text>
-                        </View>
-                    ))}
-                </View>
-
-                <ScrollView
-                    horizontal={true}
-                    style={styles.barListWrapper}
-                    contentContainerStyle={styles.barListContent}
-                >
-                    {validFiles.map((fileEntry) => {
-                        const data = fileEntry.averageSummary!;
-                        const totalDuration = data.totalDuration || 0;
-
-                        const totalEffects =
-                            (data.totalEffectDuration || 0) +
-                            (data.totalPassiveEffectDuration || 0);
-                        const totalRenderAndCommitDuration = Math.max(
-                            0,
-                            totalDuration - totalEffects
-                        );
-
-                        const barHeight = (totalDuration / scaleMax) * totalChartHeight;
-                        const renderHeightPx =
-                            (totalRenderAndCommitDuration / scaleMax) * totalChartHeight || 0;
-                        const layoutHeightPx =
-                            (data.totalEffectDuration! / scaleMax) * totalChartHeight || 0;
-                        const passiveHeightPx =
-                            (data.totalPassiveEffectDuration! / scaleMax) * totalChartHeight ||
-                            0;
-
-                        return (
-                            <View key={fileEntry.id} style={styles.barWrapper}>
-                                <Text style={styles.barLabelTop}>
-                                    Średnia: {totalDuration.toFixed(2)} ms
-                                </Text>
-
-                                <StackedBar
-                                    totalHeight={barHeight}
-                                    width={80}
-                                    renderHeight={renderHeightPx}
-                                    layoutHeight={layoutHeightPx}
-                                    passiveHeight={passiveHeightPx}
-                                />
-
-                                <Text style={styles.barLabelBottom} numberOfLines={1}>
-                                    {fileEntry.groupName}
-                                </Text>
-                                {showMeasurementCount && (
-                                    <Text style={styles.barLabelTop}>
-                                        ({fileEntry.fileNames.length} pom.)
-                                    </Text>
-                                )}
-                            </View>
-                        );
-                    })}
-                </ScrollView>
-            </View>
-
-            <Text style={styles.footerText}>
-                Wysokość słupka jest skalowana względem{' '}
-                <Text style={{ fontWeight: 'bold' }}>
-                    Maksymalnej Skali Czasu ({scaleMax.toFixed(0)} ms)
+            {/* Nagłówek */}
+            <View style={styles.headerRow}>
+                <Text style={styles.title}>
+                    Zbiorcze Porównanie
                 </Text>
-                .
-            </Text>
+
+                <Pressable
+                    style={styles.toggleButton}
+                    onPress={() => setIsVisible(!isVisible)}
+                >
+                    <View style={[styles.checkbox, isVisible && styles.checkboxChecked]}>
+                        {isVisible && <Text style={styles.checkboxCheck}>✓</Text>}
+                    </View>
+                    <Text style={styles.toggleText}>Pokaż wykres</Text>
+                </Pressable>
+            </View>
+
+            {isVisible && (
+                <>
+                    <MeasurementToggle
+                        checked={showMeasurementCount}
+                        onToggle={setShowMeasurementCount}
+                    />
+                    <View style={styles.legend}>
+                        <LegendItem color={CHART_COLORS.render} label="Render + Commit" />
+                        <LegendItem color={CHART_COLORS.layout} label="Layout Effects" />
+                        <LegendItem color={CHART_COLORS.passive} label="Passive Effects" />
+                    </View>
+
+                    {/* Kontener Wykresu */}
+                    <View style={styles.chartRow}>
+
+                        {/* Oś Y */}
+                        <View style={[styles.yAxis, { height: totalChartHeight }]}>
+                            {yAxisMarkers.map((marker, index) => (
+                                <View
+                                    key={index}
+                                    style={[
+                                        styles.yAxisMarker,
+                                        {
+                                            bottom: marker.bottom,
+                                            // Linie poziome (grid) tylko dla wartości pośrednich
+                                            borderBottomWidth: 0,
+                                        },
+                                    ]}
+                                >
+                                    {/* Linia siatki */}
+                                    <View style={styles.gridLine} />
+                                    <Text style={styles.yAxisText}>
+                                        {marker.value.toFixed(0)}
+                                    </Text>
+                                </View>
+                            ))}
+                            {/* Zero na dole */}
+                            <View style={[styles.yAxisMarker, { bottom: 0 }]}>
+                                <Text style={styles.yAxisText}>0</Text>
+                            </View>
+                        </View>
+
+                        {/* Obszar Słupków */}
+                        <ScrollView
+                            horizontal={true}
+                            style={styles.scrollArea}
+                            contentContainerStyle={styles.scrollContent}
+                        >
+                            {validFiles.map((fileEntry) => {
+                                const data = fileEntry.averageSummary!;
+                                const totalDuration = data.totalDuration || 0;
+
+                                const totalEffects =
+                                    (data.totalEffectDuration || 0) +
+                                    (data.totalPassiveEffectDuration || 0);
+                                const totalRenderAndCommitDuration = Math.max(
+                                    0,
+                                    totalDuration - totalEffects
+                                );
+
+                                const barHeight = (totalDuration / scaleMax) * totalChartHeight;
+                                const renderHeightPx =
+                                    (totalRenderAndCommitDuration / scaleMax) * totalChartHeight || 0;
+                                const layoutHeightPx =
+                                    (data.totalEffectDuration! / scaleMax) * totalChartHeight || 0;
+                                const passiveHeightPx =
+                                    (data.totalPassiveEffectDuration! / scaleMax) * totalChartHeight ||
+                                    0;
+
+                                return (
+                                    <View key={fileEntry.id} style={styles.columnWrapper}>
+
+                                        {/* GÓRA: Obszar rysowania (Wysokość równa osi Y) */}
+                                        {/* borderBottomWidth tutaj to Oś X */}
+                                        <View style={[styles.plotArea, { height: totalChartHeight }]}>
+
+                                            {/* Wartość liczbowa nad słupkiem */}
+                                            <Text style={styles.barValueText}>
+                                                {totalDuration.toFixed(0)}
+                                            </Text>
+
+                                            {/* Słupek - przylega do dołu dzięki justifyContent: flex-end */}
+                                            <StackedBar
+                                                totalHeight={barHeight}
+                                                width={50}
+                                                renderHeight={renderHeightPx}
+                                                layoutHeight={layoutHeightPx}
+                                                passiveHeight={passiveHeightPx}
+                                            />
+                                        </View>
+
+                                        {/* DÓŁ: Etykiety tekstowe pod osią X */}
+                                        <View style={styles.labelsArea}>
+                                            <Text style={styles.groupNameText} numberOfLines={2}>
+                                                {fileEntry.groupName}
+                                            </Text>
+                                            {showMeasurementCount && (
+                                                <Text style={styles.measurementCountText}>
+                                                    ({fileEntry.fileNames.length})
+                                                </Text>
+                                            )}
+                                        </View>
+                                    </View>
+                                );
+                            })}
+                        </ScrollView>
+                    </View>
+
+                    <Text style={styles.footerText}>
+                        Wysokość słupka jest skalowana względem{' '}
+                        <Text style={{ fontWeight: 'bold' }}>
+                            Maksymalnej Skali Czasu ({scaleMax.toFixed(0)} ms)
+                        </Text>
+                        .
+                    </Text>
+                </>
+            )}
         </View>
     );
 };
@@ -151,7 +196,7 @@ const MultiGroupComparisonChart: React.FC<MultiGroupComparisonChartProps> = ({
 const LegendItem = ({ color, label }: { color: string; label: string }) => (
     <View style={styles.legendItem}>
         <View style={[styles.legendDot, { backgroundColor: color }]} />
-        <Text>{label}</Text>
+        <Text style={{ fontSize: 12 }}>{label}</Text>
     </View>
 );
 
@@ -181,95 +226,158 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: '#6b7280',
     },
+    headerRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 24,
+    },
     title: {
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: 'bold',
         color: '#1f2937',
-        marginBottom: 24,
-        textAlign: 'center',
+    },
+    toggleButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#f3f4f6',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 20,
+    },
+    toggleText: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#4b5563',
+    },
+    checkbox: {
+        width: 16,
+        height: 16,
+        borderWidth: 1,
+        borderColor: '#d1d5db',
+        borderRadius: 4,
+        marginRight: 6,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+    },
+    checkboxChecked: {
+        backgroundColor: '#4f46e5',
+        borderColor: '#4f46e5',
+    },
+    checkboxCheck: {
+        color: '#fff',
+        fontSize: 10,
+        fontWeight: 'bold',
     },
     legend: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginBottom: 32,
-        padding: 12,
-        backgroundColor: '#f9fafb',
-        borderRadius: 8,
+        marginBottom: 24,
         flexWrap: 'wrap',
     },
     legendItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginHorizontal: 12,
+        marginHorizontal: 8,
         marginBottom: 4,
     },
     legendDot: {
-        width: 16,
-        height: 16,
-        borderRadius: 8,
-        marginRight: 8,
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+        marginRight: 6,
     },
-    chartContainer: {
+
+    chartRow: {
         flexDirection: 'row',
-        alignItems: 'flex-end',
-        height: 200,
     },
+
     yAxis: {
-        height: 200,
-        width: 48,
+        width: 40,
         marginRight: 8,
         borderRightWidth: 1,
         borderRightColor: '#d1d5db',
+        borderBottomWidth: 1,
+        borderBottomColor: '#d1d5db',
+        position: 'relative',
     },
     yAxisMarker: {
         position: 'absolute',
         right: 0,
         width: '100%',
-        paddingRight: 8,
-        borderColor: '#e5e7eb',
-        paddingBottom: 3,
+        paddingRight: 6,
+        justifyContent: 'center',
+        height: 0,
+        overflow: 'visible',
+    },
+    gridLine: {
+        position: 'absolute',
+        right: 0,
+        width: 5,
+        height: 1,
+        backgroundColor: '#d1d5db',
     },
     yAxisText: {
         textAlign: 'right',
-        fontSize: 12,
-        color: '#6b7280',
+        fontSize: 10,
+        color: '#9ca3af',
+        transform: [{ translateY: -6 }],
     },
-    barListWrapper: {
+
+    scrollArea: {
         flex: 1,
-        height: 200,
-        borderBottomWidth: 1,
-        borderBottomColor: '#d1d5db',
     },
-    barListContent: {
+    scrollContent: {
         flexDirection: 'row',
-        alignItems: 'flex-end',
+        alignItems: 'flex-start',
         paddingHorizontal: 8,
-        paddingBottom: 4,
     },
-    barWrapper: {
+
+    columnWrapper: {
         flexDirection: 'column',
         alignItems: 'center',
+        marginHorizontal: 10,
+        minWidth: 60,
+    },
+
+    plotArea: {
+        width: '100%',
         justifyContent: 'flex-end',
-        height: '100%',
-        marginHorizontal: 16,
+        alignItems: 'center',
+        borderBottomWidth: 1,
+        borderBottomColor: '#d1d5db',
+        overflow: 'visible',
     },
-    barLabelTop: {
-        fontSize: 12,
+    barValueText: {
+        fontSize: 10,
         color: '#6b7280',
-        marginBottom: 8,
+        marginBottom: 4,
     },
-    barLabelBottom: {
+
+    labelsArea: {
         marginTop: 8,
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#1f2937',
-        maxWidth: 80,
+        alignItems: 'center',
+        width: 80,
     },
+    groupNameText: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#1f2937',
+        textAlign: 'center',
+    },
+    measurementCountText: {
+        fontSize: 10,
+        color: '#9ca3af',
+        textAlign: 'center',
+        marginTop: 2,
+    },
+
     footerText: {
         marginTop: 24,
         textAlign: 'center',
-        fontSize: 14,
-        color: '#4b5563',
+        fontSize: 12,
+        color: '#9ca3af',
     },
 });
 
