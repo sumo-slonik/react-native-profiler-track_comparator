@@ -24,7 +24,7 @@ jobs:
 
       - name: Fix Index HTML path
         run: |
-          REPO_NAME=react-native-profiler-track_comparator
+          REPO_NAME=react-native-profiler-trace-comparator
           INDEX_FILE=dist/index.html
           # Użycie 'sed' do zamiany absolutnej ścieżki (/...) na ścieżkę z prefiksem repozytorium (/repo_name/...)
           # Zamienia: "/_expo/static/" 
