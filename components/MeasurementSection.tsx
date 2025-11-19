@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, DimensionValue } from 'react-native';
+import { View, Text, StyleSheet, DimensionValue, TouchableOpacity } from 'react-native';
 import { FileCommitData, ProfilerFile } from '../types/FileEntry';
 import GroupNameInput from './GroupNameInput';
 import FilesList from './FilesList';
@@ -17,6 +17,9 @@ interface MeasurementSectionProps {
     onError: (message: string, index: number) => void;
     analysisMode: AnalysisMode;
     metricType: MetricType;
+    onRemoveSection: (id: number) => void;
+    onClearFiles: (index: number) => void;
+    isRemovable: boolean;
 }
 
 const MeasurementSection: React.FC<MeasurementSectionProps> = ({
@@ -26,15 +29,19 @@ const MeasurementSection: React.FC<MeasurementSectionProps> = ({
                                                                    onGroupNameChange,
                                                                    onFilesLoaded,
                                                                    onError,
-                                                                   // [3] Destrukturyzacja
                                                                    analysisMode,
                                                                    metricType,
+                                                                   onRemoveSection,
+                                                                   onClearFiles,
+                                                                   // [2] Destrukturyzacja
+                                                                   isRemovable,
                                                                }) => {
     const itemWidth = (numColumns > 1
         ? `${(100 / numColumns).toFixed(2)}%`
         : '100%') as DimensionValue;
 
     const itemPadding = numColumns > 1 ? 12 : 0;
+    const hasFiles = fileEntry.fileNames.length > 0;
 
     return (
         <View
@@ -44,20 +51,44 @@ const MeasurementSection: React.FC<MeasurementSectionProps> = ({
             ]}
         >
             <View style={styles.sectionContent}>
-                <GroupNameInput
-                    index={index}
-                    initialName={fileEntry.groupName}
-                    onNameChange={onGroupNameChange}
-                />
 
-                <JsonFileInput
-                    index={index}
-                    onFilesLoaded={onFilesLoaded}
-                    onError={onError}
-                />
+                <View style={styles.headerRow}>
+                    <View style={{ flex: 1 }}>
+                        <GroupNameInput
+                            index={index}
+                            initialName={fileEntry.groupName}
+                            onNameChange={onGroupNameChange}
+                        />
+                    </View>
+
+                    {isRemovable && (
+                        <TouchableOpacity
+                            style={styles.removeSectionButton}
+                            onPress={() => onRemoveSection(fileEntry.id)}
+                        >
+                            <Text style={styles.removeSectionText}>✕</Text>
+                        </TouchableOpacity>
+                    )}
+                </View>
+
+                {!hasFiles && (
+                    <JsonFileInput
+                        index={index}
+                        onFilesLoaded={onFilesLoaded}
+                        onError={onError}
+                    />
+                )}
 
                 <View style={styles.summaryWrapper}>
-                    <Text style={styles.summaryTitle}>Podsumowanie</Text>
+                    <View style={styles.summaryHeader}>
+                        <Text style={styles.summaryTitle}>Podsumowanie</Text>
+
+                        {hasFiles && (
+                            <TouchableOpacity onPress={() => onClearFiles(index)}>
+                                <Text style={styles.clearFilesText}>Wgraj inne pliki</Text>
+                            </TouchableOpacity>
+                        )}
+                    </View>
 
                     {fileEntry.loadingError && (
                         <Text style={styles.errorText}>
@@ -65,7 +96,7 @@ const MeasurementSection: React.FC<MeasurementSectionProps> = ({
                         </Text>
                     )}
 
-                    {fileEntry.fileNames.length > 0 && !fileEntry.loadingError && (
+                    {hasFiles && !fileEntry.loadingError && (
                         <View style={styles.loadedInfo}>
                             <Text style={{ fontWeight: 'bold' }}>
                                 ✅ Wczytano: {fileEntry.fileNames.length} pomiar(y).
@@ -74,18 +105,17 @@ const MeasurementSection: React.FC<MeasurementSectionProps> = ({
                         </View>
                     )}
 
-                    {/* [4] Warunkowe renderowanie: Wykres vs Lista Komponentów */}
+                    {/* WYKRESY / RANKINGI */}
                     {fileEntry.averageSummary && (
                         analysisMode === 'total' ? (
                             <SectionChart fileEntry={fileEntry} />
                         ) : (
-
                             <ComponentRankingList
-                        fileEntry={fileEntry}
-                        metricType={metricType}
-                        />
+                                fileEntry={fileEntry}
+                                metricType={metricType}
+                            />
                         )
-                        )}
+                    )}
                 </View>
             </View>
         </View>
@@ -109,17 +139,49 @@ const styles = StyleSheet.create({
         borderTopWidth: 4,
         borderTopColor: '#a855f7',
     },
+    headerRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        marginBottom: 8,
+    },
+    removeSectionButton: {
+        marginLeft: 12,
+        marginTop: 4,
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        backgroundColor: '#fee2e2', // red-100
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    removeSectionText: {
+        color: '#ef4444', // red-500
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
     summaryWrapper: {
         marginTop: 16,
         paddingTop: 16,
         borderTopWidth: 1,
         borderTopColor: '#f3f4f6',
     },
+    summaryHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
     summaryTitle: {
         fontSize: 18,
         fontWeight: 'bold',
         color: '#8b5cf6',
-        marginBottom: 8,
+    },
+    clearFilesText: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#6b7280',
+        textDecorationLine: 'underline',
     },
     errorText: {
         color: '#dc2626',

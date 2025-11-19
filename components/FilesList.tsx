@@ -82,7 +82,6 @@ const FilesList = ({ fileEntry }: { fileEntry: FileCommitData }) => {
                 </Text>
             </TouchableOpacity>
 
-            {/* Lista plików */}
             {expanded && (
                 <View>
                     {fileEntry.fileStats.map((stats, i) => (
