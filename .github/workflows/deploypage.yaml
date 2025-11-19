@@ -28,7 +28,7 @@ jobs:
           INDEX_FILE=dist/index.html
           # Użycie 'sed' do zamiany absolutnej ścieżki (/...) na ścieżkę z prefiksem repozytorium (/repo_name/...)
           # Zamienia: "/_expo/static/" 
-          # Na:      "/react-native-profiler-track_comparator/_expo/static/"
+          # Na:      "/react-native-profiler-trace-comparator/_expo/static/"
           sed -i "s|/_expo/static/|/$REPO_NAME/_expo/static/|g" $INDEX_FILE
           # Wyświetl poprawiony plik (opcjonalnie, do debugowania)
           cat $INDEX_FILE
