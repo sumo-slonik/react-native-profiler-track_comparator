@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { FileCommitData } from '../types/FileEntry';
 
@@ -8,11 +8,15 @@ interface ComparisonTableProps {
     onSetMain: (id: number) => void;
 }
 
+type TimeMetric = 'total' | 'effect' | 'passive';
+
 const ComparisonTable: React.FC<ComparisonTableProps> = ({
                                                              files,
                                                              mainSectionId,
                                                              onSetMain,
                                                          }) => {
+    const [selectedMetric, setSelectedMetric] = useState<TimeMetric>('total');
+
     const validFiles = files.filter(
         (f) => f.averageSummary && f.averageSummary.totalDuration
     );
@@ -21,12 +25,41 @@ const ComparisonTable: React.FC<ComparisonTableProps> = ({
         return null;
     }
 
+    const getValue = (file: FileCommitData) => {
+        const summary = file.averageSummary;
+        if (!summary) return 0;
+        switch (selectedMetric) {
+            case 'total': return summary.totalDuration || 0;
+            case 'effect': return summary.totalEffectDuration || 0;
+            case 'passive': return summary.totalPassiveEffectDuration || 0;
+            default: return 0;
+        }
+    };
+
     const mainFile = validFiles.find((f) => f.id === mainSectionId);
-    const baselineDuration = mainFile?.averageSummary?.totalDuration || 0;
+    const baselineDuration = mainFile ? getValue(mainFile) : 0;
 
     return (
         <View style={styles.wrapper}>
             <Text style={styles.title}>Comparison Table</Text>
+
+            <View style={styles.metricSelector}>
+                <MetricOption
+                    label="Total"
+                    isSelected={selectedMetric === 'total'}
+                    onPress={() => setSelectedMetric('total')}
+                />
+                <MetricOption
+                    label="Layout Effects"
+                    isSelected={selectedMetric === 'effect'}
+                    onPress={() => setSelectedMetric('effect')}
+                />
+                <MetricOption
+                    label="Passive Effects"
+                    isSelected={selectedMetric === 'passive'}
+                    onPress={() => setSelectedMetric('passive')}
+                />
+            </View>
 
             <View style={styles.headerRow}>
                 <View style={[styles.colBase, styles.colName]}>
@@ -45,7 +78,7 @@ const ComparisonTable: React.FC<ComparisonTableProps> = ({
 
             <View>
                 {validFiles.map((file) => {
-                    const currentDuration = file.averageSummary?.totalDuration || 0;
+                    const currentDuration = getValue(file);
                     const isMain = file.id === mainSectionId;
 
                     const diffMs = currentDuration - baselineDuration;
@@ -118,6 +151,17 @@ const ComparisonTable: React.FC<ComparisonTableProps> = ({
     );
 };
 
+const MetricOption = ({ label, isSelected, onPress }: { label: string, isSelected: boolean, onPress: () => void }) => (
+    <TouchableOpacity style={styles.metricOption} onPress={onPress}>
+        <View style={[styles.metricRadioOuter, isSelected && styles.radioOuterSelected]}>
+            {isSelected && <View style={styles.metricRadioInner} />}
+        </View>
+        <Text style={[styles.metricLabel, isSelected && styles.metricLabelSelected]}>
+            {label}
+        </Text>
+    </TouchableOpacity>
+);
+
 const styles = StyleSheet.create({
     wrapper: {
         marginTop: 24,
@@ -138,6 +182,43 @@ const styles = StyleSheet.create({
         color: '#1f2937',
         marginBottom: 16,
         textAlign: 'center',
+    },
+    metricSelector: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginBottom: 16,
+        flexWrap: 'wrap',
+        gap: 16,
+    },
+    metricOption: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginHorizontal: 8,
+    },
+    metricRadioOuter: {
+        width: 16,
+        height: 16,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#d1d5db',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 6,
+        backgroundColor: '#fff',
+    },
+    metricRadioInner: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: '#4f46e5',
+    },
+    metricLabel: {
+        fontSize: 13,
+        color: '#4b5563',
+    },
+    metricLabelSelected: {
+        color: '#1f2937',
+        fontWeight: '600',
     },
     headerRow: {
         flexDirection: 'row',
