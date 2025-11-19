@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, LayoutAnimation, Platform, UIManager } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, LayoutAnimation, Platform, UIManager, Pressable } from "react-native";
 import React, { useState } from "react";
 import { FileCommitData } from "../types/FileEntry";
 
@@ -23,6 +23,41 @@ const styles = StyleSheet.create({
         color: '#4b5563',
     },
     collapsibleIcon: {
+        fontSize: 12,
+        color: '#6b7280',
+    },
+
+    controlsRow: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        marginBottom: 8,
+        paddingHorizontal: 4,
+    },
+    checkboxContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    checkbox: {
+        width: 16,
+        height: 16,
+        borderWidth: 1,
+        borderColor: '#d1d5db',
+        borderRadius: 4,
+        marginRight: 6,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+    },
+    checkboxChecked: {
+        backgroundColor: '#4f46e5',
+        borderColor: '#4f46e5',
+    },
+    checkmark: {
+        color: '#fff',
+        fontSize: 10,
+        fontWeight: 'bold',
+    },
+    checkboxLabel: {
         fontSize: 12,
         color: '#6b7280',
     },
@@ -61,6 +96,7 @@ const styles = StyleSheet.create({
 
 const FilesList = ({ fileEntry }: { fileEntry: FileCommitData }) => {
     const [expanded, setExpanded] = useState(false);
+    const [showCommits, setShowCommits] = useState(false);
 
     const toggleExpand = () => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -84,16 +120,32 @@ const FilesList = ({ fileEntry }: { fileEntry: FileCommitData }) => {
 
             {expanded && (
                 <View>
+                    <View style={styles.controlsRow}>
+                        <Pressable
+                            style={styles.checkboxContainer}
+                            onPress={() => setShowCommits(!showCommits)}
+                        >
+                            <View style={[styles.checkbox, showCommits && styles.checkboxChecked]}>
+                                {showCommits && <Text style={styles.checkmark}>✓</Text>}
+                            </View>
+                            <Text style={styles.checkboxLabel}>Show commit count</Text>
+                        </Pressable>
+                    </View>
+
                     {fileEntry.fileStats.map((stats, i) => (
                         <View key={i} style={styles.fileStatRow}>
                             <Text style={styles.fileStatName} numberOfLines={1}>
                                 {stats.fileName}:
                             </Text>
                             <View style={styles.fileStatMetrics}>
-                                <Text style={styles.fileStatCommits}>
-                                    {stats.commitCount} commits
-                                </Text>
-                                <Text style={styles.fileStatSeparator}> / </Text>
+                                {showCommits && (
+                                    <>
+                                        <Text style={styles.fileStatCommits}>
+                                            {stats.commitCount} commits
+                                        </Text>
+                                        <Text style={styles.fileStatSeparator}> / </Text>
+                                    </>
+                                )}
                                 <Text style={styles.fileStatDuration}>
                                     {stats.totalDuration.toFixed(2)} ms (Total)
                                 </Text>

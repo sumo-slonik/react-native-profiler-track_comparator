@@ -8,22 +8,34 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "web-build": "expo export --platform web"
+    "web-build": "expo export --platform web",
+    "test": "jest"
   },
   "dependencies": {
     "expo": "~54.0.24",
     "expo-document-picker": "~14.0.7",
-    "expo-file-system": "^19.0.18",
-    "expo-print": "^15.0.7",
-    "expo-status-bar": "~3.0.8",
+    "expo-file-system": "~19.0.18",
+    "expo-print": "~15.0.7",
     "react": "19.1.0",
     "react-dom": "^19.1.0",
     "react-native": "0.81.5",
-    "react-native-web": "^0.21.2"
+    "react-native-web": "~0.21.2"
   },
   "devDependencies": {
+    "@testing-library/react-native": "^13.3.3",
+    "@types/jest": "^29.5.12",
     "@types/react": "~19.1.0",
-    "typescript": "~5.9.2"
+    "babel-preset-expo": "^54.0.7",
+    "jest": "^29.7.0",
+    "jest-expo": "^54.0.13",
+    "react-test-renderer": "19.1.0",
+    "typescript": "~5.3.3"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "transformIgnorePatterns": [
+      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)"
+    ]
   },
   "private": true,
   "homepage": "https://sumo-slonik.github.io/react-native-profiler-track_comparator/"

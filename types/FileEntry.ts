@@ -66,4 +66,4 @@ type FileCommitData = {
     componentMap: Map<number, string>,
 }
 
-export type {AggregatedTimes, CommitDataEntry, RootData, ProfilerFile, FileStats, FileCommitData};
+export type {AggregatedTimes, CommitDataEntry, RootData, ProfilerFile, FileStats, FileCommitData, SnapshotNode};

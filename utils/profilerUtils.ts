@@ -109,6 +109,17 @@ export const calculateComponentStats = (
         }
     }
 
+    const fileCount = profilerDataArray.length;
+
+    if (fileCount > 1) {
+        for (const [key, value] of actualTotal) {
+            actualTotal.set(key, value / fileCount);
+        }
+        for (const [key, value] of selfTotal) {
+            selfTotal.set(key, value / fileCount);
+        }
+    }
+
     return {
         fiberActualDurationsTotal: actualTotal,
         fiberSelfDurationsTotal: selfTotal,
