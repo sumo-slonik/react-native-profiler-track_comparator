@@ -28,7 +28,7 @@ const MultiGroupComparisonChart: React.FC<MultiGroupComparisonChartProps> = ({
         return (
             <View style={styles.wrapperError}>
                 <Text style={styles.textError}>
-                    Brak wczytanych danych do porównania (lub wszystkie czasy są zerowe).
+                    No comparison data available (or all durations are zero).
                 </Text>
             </View>
         );
@@ -55,10 +55,9 @@ const MultiGroupComparisonChart: React.FC<MultiGroupComparisonChartProps> = ({
 
     return (
         <View style={styles.wrapper}>
-            {/* Nagłówek */}
             <View style={styles.headerRow}>
                 <Text style={styles.title}>
-                    Zbiorcze Porównanie
+                    Aggregate Comparison
                 </Text>
 
                 <Pressable
@@ -68,7 +67,7 @@ const MultiGroupComparisonChart: React.FC<MultiGroupComparisonChartProps> = ({
                     <View style={[styles.checkbox, isVisible && styles.checkboxChecked]}>
                         {isVisible && <Text style={styles.checkboxCheck}>✓</Text>}
                     </View>
-                    <Text style={styles.toggleText}>Pokaż wykres</Text>
+                    <Text style={styles.toggleText}>Show chart</Text>
                 </Pressable>
             </View>
 
@@ -84,10 +83,8 @@ const MultiGroupComparisonChart: React.FC<MultiGroupComparisonChartProps> = ({
                         <LegendItem color={CHART_COLORS.passive} label="Passive Effects" />
                     </View>
 
-                    {/* Kontener Wykresu */}
                     <View style={styles.chartRow}>
 
-                        {/* Oś Y */}
                         <View style={[styles.yAxis, { height: totalChartHeight }]}>
                             {yAxisMarkers.map((marker, index) => (
                                 <View
@@ -96,25 +93,21 @@ const MultiGroupComparisonChart: React.FC<MultiGroupComparisonChartProps> = ({
                                         styles.yAxisMarker,
                                         {
                                             bottom: marker.bottom,
-                                            // Linie poziome (grid) tylko dla wartości pośrednich
                                             borderBottomWidth: 0,
                                         },
                                     ]}
                                 >
-                                    {/* Linia siatki */}
                                     <View style={styles.gridLine} />
                                     <Text style={styles.yAxisText}>
                                         {marker.value.toFixed(0)}
                                     </Text>
                                 </View>
                             ))}
-                            {/* Zero na dole */}
                             <View style={[styles.yAxisMarker, { bottom: 0 }]}>
                                 <Text style={styles.yAxisText}>0</Text>
                             </View>
                         </View>
 
-                        {/* Obszar Słupków */}
                         <ScrollView
                             horizontal={true}
                             style={styles.scrollArea}
@@ -144,16 +137,12 @@ const MultiGroupComparisonChart: React.FC<MultiGroupComparisonChartProps> = ({
                                 return (
                                     <View key={fileEntry.id} style={styles.columnWrapper}>
 
-                                        {/* GÓRA: Obszar rysowania (Wysokość równa osi Y) */}
-                                        {/* borderBottomWidth tutaj to Oś X */}
                                         <View style={[styles.plotArea, { height: totalChartHeight }]}>
 
-                                            {/* Wartość liczbowa nad słupkiem */}
                                             <Text style={styles.barValueText}>
                                                 {totalDuration.toFixed(0)}
                                             </Text>
 
-                                            {/* Słupek - przylega do dołu dzięki justifyContent: flex-end */}
                                             <StackedBar
                                                 totalHeight={barHeight}
                                                 width={50}
@@ -163,7 +152,6 @@ const MultiGroupComparisonChart: React.FC<MultiGroupComparisonChartProps> = ({
                                             />
                                         </View>
 
-                                        {/* DÓŁ: Etykiety tekstowe pod osią X */}
                                         <View style={styles.labelsArea}>
                                             <Text style={styles.groupNameText} numberOfLines={2}>
                                                 {fileEntry.groupName}
@@ -181,9 +169,9 @@ const MultiGroupComparisonChart: React.FC<MultiGroupComparisonChartProps> = ({
                     </View>
 
                     <Text style={styles.footerText}>
-                        Wysokość słupka jest skalowana względem{' '}
+                        Bar height is scaled relative to the{' '}
                         <Text style={{ fontWeight: 'bold' }}>
-                            Maksymalnej Skali Czasu ({scaleMax.toFixed(0)} ms)
+                            Maximum Time Scale ({scaleMax.toFixed(0)} ms)
                         </Text>
                         .
                     </Text>
@@ -288,11 +276,9 @@ const styles = StyleSheet.create({
         borderRadius: 6,
         marginRight: 6,
     },
-
     chartRow: {
         flexDirection: 'row',
     },
-
     yAxis: {
         width: 40,
         marginRight: 8,
@@ -324,7 +310,6 @@ const styles = StyleSheet.create({
         color: '#9ca3af',
         transform: [{ translateY: -6 }],
     },
-
     scrollArea: {
         flex: 1,
     },
@@ -333,14 +318,12 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         paddingHorizontal: 8,
     },
-
     columnWrapper: {
         flexDirection: 'column',
         alignItems: 'center',
         marginHorizontal: 10,
         minWidth: 60,
     },
-
     plotArea: {
         width: '100%',
         justifyContent: 'flex-end',
@@ -354,7 +337,6 @@ const styles = StyleSheet.create({
         color: '#6b7280',
         marginBottom: 4,
     },
-
     labelsArea: {
         marginTop: 8,
         alignItems: 'center',
@@ -372,7 +354,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 2,
     },
-
     footerText: {
         marginTop: 24,
         textAlign: 'center',

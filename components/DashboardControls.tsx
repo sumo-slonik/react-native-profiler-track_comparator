@@ -22,7 +22,7 @@ const DashboardControls: React.FC<DashboardControlsProps> = ({
     return (
         <View style={[styles.wrapper, isMobile && styles.wrapperMobile]}>
             <View style={[styles.group, isMobile && styles.groupMobile]}>
-                <Text style={styles.title}>Liczba grup: {count}</Text>
+                <Text style={styles.title}>Group count: {count}</Text>
 
                 <AddSection handleAddSection={onAdd} />
                 <RemoveSection

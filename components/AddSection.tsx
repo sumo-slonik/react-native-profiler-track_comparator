@@ -42,7 +42,7 @@ const AddSection = ({handleAddSection}:{handleAddSection:()=>void})=>{
             onHoverIn={() => setAddHover(true)}
             onHoverOut={() => setAddHover(false)}
         >
-            <Text style={appStyles.buttonText}>+ Dodaj Sekcję</Text>
+            <Text style={appStyles.buttonText}>+ Add Section</Text>
         </Pressable>
     )
 }

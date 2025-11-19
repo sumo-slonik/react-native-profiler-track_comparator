@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, DimensionValue } from 'react-native';
 
 interface StackedBarProps {
-    totalHeight: number; // Wysokość całkowita kontenera słupka
+    totalHeight: number;
     width?: number;
     renderHeight: DimensionValue;
     layoutHeight: DimensionValue;
@@ -64,7 +64,7 @@ const StackedBar: React.FC<StackedBarProps> = ({
 
 const styles = StyleSheet.create({
     barStack: {
-        flexDirection: 'column-reverse', // Budujemy od dołu
+        flexDirection: 'column-reverse',
         position: 'relative',
         borderRadius: 6,
         shadowColor: '#000',
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 5,
         elevation: 3,
-        overflow: 'hidden', // Ważne, żeby segmenty nie wystawały poza zaokrąglenia
+        overflow: 'hidden',
     },
     segment: {
         width: '100%',

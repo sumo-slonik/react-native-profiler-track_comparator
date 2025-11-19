@@ -25,12 +25,12 @@ const GroupNameInput: React.FC<GroupNameInputProps> = ({
 
     return (
         <View style={styles.wrapper}>
-            <Text style={styles.label}>Nazwa Grupy (wykres)</Text>
+            <Text style={styles.label}>Group Name (chart)</Text>
             <TextInput
                 style={styles.input}
                 value={name}
                 onChangeText={handleChange}
-                placeholder={`Grupa ${index + 1}`}
+                placeholder={`Group ${index + 1}`}
             />
         </View>
     );
@@ -41,14 +41,12 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     label: {
-        // display: 'block' - w RN to domyślne zachowanie, można pominąć, ale zostawiam dla zgodności
         fontSize: 12,
         fontWeight: '500',
         color: '#6b7280',
     },
     input: {
         marginTop: 4,
-        // display: 'block',
         width: '100%',
         borderRadius: 6,
         borderWidth: 1,

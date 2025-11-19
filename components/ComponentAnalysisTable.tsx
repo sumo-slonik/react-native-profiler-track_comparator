@@ -22,12 +22,12 @@ const ComponentAnalysisTable: React.FC<ComponentAnalysisTableProps> = ({
         return (
             <View style={styles.wrapper}>
                 <Text style={styles.placeholderText}>
-                    Wybierz komponent z listy powyżej, aby zobaczyć analizę.
+                    Select a component from the list above to view analysis.
                 </Text>
             </View>
         );
     }
-    debugger;
+
     const getComponentDuration = (file: FileCommitData): number => {
         const map = metricType === 'actual'
             ? file.fiberActualDurationsTotal
@@ -41,71 +41,64 @@ const ComponentAnalysisTable: React.FC<ComponentAnalysisTableProps> = ({
     return (
         <View style={styles.wrapper}>
             <Text style={styles.title}>
-                Analiza: <Text style={{ color: '#4f46e5' }}>{selectedComponent}</Text>
+                Analysis: <Text style={{ color: '#4f46e5' }}>{selectedComponent}</Text>
             </Text>
             <Text style={styles.subtitle}>
-                Metryka: {metricType === 'actual' ? 'Total Actual Duration' : 'Total Self Duration'}
+                Metric: {metricType === 'actual' ? 'Total Actual Duration' : 'Total Self Duration'}
             </Text>
 
-            {/* Nagłówek */}
             <View style={styles.headerRow}>
                 <View style={[styles.colBase, styles.colName]}>
-                    <Text style={styles.headerText}>Grupa</Text>
+                    <Text style={styles.headerText}>Group</Text>
                 </View>
                 <View style={[styles.colBase, styles.colValue]}>
-                    <Text style={styles.headerText}>Czas (ms)</Text>
+                    <Text style={styles.headerText}>Time (ms)</Text>
                 </View>
                 <View style={[styles.colBase, styles.colDiff]}>
-                    <Text style={styles.headerText}>Różnica</Text>
+                    <Text style={styles.headerText}>Diff</Text>
                 </View>
                 <View style={[styles.colBase, styles.colAction, styles.noBorder]}>
                     <Text style={styles.headerText}>Baseline</Text>
                 </View>
             </View>
 
-            {/* Wiersze */}
             <View>
                 {files.map((file) => {
                     const currentDuration = getComponentDuration(file);
                     const isMain = file.id === mainSectionId;
 
-                    // Obliczenia różnicy
                     const diffMs = currentDuration - baselineDuration;
                     const diffPercent = baselineDuration > 0
                         ? (diffMs / baselineDuration) * 100
                         : 0;
 
-                    // Kolorowanie
                     let diffColor = '#6b7280';
                     let diffSign = '';
 
                     if (!isMain && mainSectionId !== null) {
                         if (diffMs < 0) {
-                            diffColor = '#10b981'; // zielony (szybciej)
+                            diffColor = '#10b981';
                             diffSign = '';
                         } else if (diffMs > 0) {
-                            diffColor = '#ef4444'; // czerwony (wolniej)
+                            diffColor = '#ef4444';
                             diffSign = '+';
                         }
                     }
 
                     return (
                         <View key={file.id} style={[styles.row, isMain && styles.rowMain]}>
-                            {/* Nazwa Grupy */}
                             <View style={[styles.colBase, styles.colName, styles.cellLeft]}>
                                 <Text style={styles.cellText} numberOfLines={1}>
                                     {file.groupName}
                                 </Text>
                             </View>
 
-                            {/* Czas */}
                             <View style={[styles.colBase, styles.colValue, styles.cellRight]}>
                                 <Text style={styles.cellText}>
                                     {currentDuration.toFixed(2)}
                                 </Text>
                             </View>
 
-                            {/* Różnica */}
                             <View style={[styles.colBase, styles.colDiff, styles.cellCenter]}>
                                 {mainSectionId !== null && !isMain ? (
                                     <View style={{ alignItems: 'flex-end' }}>
@@ -121,7 +114,6 @@ const ComponentAnalysisTable: React.FC<ComponentAnalysisTableProps> = ({
                                 )}
                             </View>
 
-                            {/* Radio Button */}
                             <TouchableOpacity
                                 style={[styles.colBase, styles.colAction, styles.noBorder, styles.cellCenter]}
                                 onPress={() => onSetMain(file.id)}
@@ -197,13 +189,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     noBorder: { borderRightWidth: 0 },
-
-    // Szerokości kolumn
     colName: { flex: 2 },
     colValue: { flex: 2 },
     colDiff: { flex: 2.5 },
     colAction: { flex: 1 },
-
     headerText: {
         fontWeight: '600',
         color: '#4b5563',
@@ -217,9 +206,7 @@ const styles = StyleSheet.create({
     cellLeft: { alignItems: 'flex-start', paddingLeft: 8 },
     cellRight: { alignItems: 'flex-end', paddingRight: 8 },
     cellCenter: { alignItems: 'center' },
-
     dash: { color: '#9ca3af' },
-
     radioOuter: {
         width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: '#d1d5db',
         justifyContent: 'center', alignItems: 'center',

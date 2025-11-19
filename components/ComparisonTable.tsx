@@ -21,73 +21,65 @@ const ComparisonTable: React.FC<ComparisonTableProps> = ({
         return null;
     }
 
-    // Znajdź dane dla sekcji bazowej (Main)
     const mainFile = validFiles.find((f) => f.id === mainSectionId);
     const baselineDuration = mainFile?.averageSummary?.totalDuration || 0;
 
     return (
         <View style={styles.wrapper}>
-            <Text style={styles.title}>Tabela Porównawcza</Text>
+            <Text style={styles.title}>Comparison Table</Text>
 
-            {/* Nagłówek tabeli */}
             <View style={styles.headerRow}>
                 <View style={[styles.colBase, styles.colName]}>
-                    <Text style={styles.headerText}>Grupa</Text>
+                    <Text style={styles.headerText}>Group</Text>
                 </View>
                 <View style={[styles.colBase, styles.colValue]}>
-                    <Text style={styles.headerText}>Czas (ms)</Text>
+                    <Text style={styles.headerText}>Time (ms)</Text>
                 </View>
                 <View style={[styles.colBase, styles.colDiff]}>
-                    <Text style={styles.headerText}>Różnica</Text>
+                    <Text style={styles.headerText}>Diff</Text>
                 </View>
                 <View style={[styles.colBase, styles.colAction, styles.noBorder]}>
                     <Text style={styles.headerText}>Baseline</Text>
                 </View>
             </View>
 
-            {/* Wiersze */}
             <View>
                 {validFiles.map((file) => {
                     const currentDuration = file.averageSummary?.totalDuration || 0;
                     const isMain = file.id === mainSectionId;
 
-                    // Obliczenia różnicy
                     const diffMs = currentDuration - baselineDuration;
                     const diffPercent = baselineDuration > 0
                         ? (diffMs / baselineDuration) * 100
                         : 0;
 
-                    // Kolorowanie
                     let diffColor = '#6b7280';
                     let diffSign = '';
 
                     if (!isMain && mainSectionId !== null) {
                         if (diffMs < 0) {
-                            diffColor = '#10b981'; // zielony
+                            diffColor = '#10b981';
                             diffSign = '';
                         } else if (diffMs > 0) {
-                            diffColor = '#ef4444'; // czerwony
+                            diffColor = '#ef4444';
                             diffSign = '+';
                         }
                     }
 
                     return (
                         <View key={file.id} style={[styles.row, isMain && styles.rowMain]}>
-                            {/* Nazwa Grupy - Wyrównana do lewej */}
                             <View style={[styles.colBase, styles.colName, styles.cellLeft]}>
                                 <Text style={styles.cellText} numberOfLines={1}>
                                     {file.groupName}
                                 </Text>
                             </View>
 
-                            {/* Czas trwania - Wyrównany do prawej (liczby) */}
                             <View style={[styles.colBase, styles.colValue, styles.cellRight]}>
                                 <Text style={styles.cellText}>
                                     {currentDuration.toFixed(2)}
                                 </Text>
                             </View>
 
-                            {/* Różnica - Wyrównana do prawej/środka */}
                             <View style={[styles.colBase, styles.colDiff, styles.cellCenter]}>
                                 {mainSectionId !== null && !isMain ? (
                                     <View style={{ alignItems: 'flex-end' }}>
@@ -103,7 +95,6 @@ const ComparisonTable: React.FC<ComparisonTableProps> = ({
                                 )}
                             </View>
 
-                            {/* Radio Button - Środek */}
                             <TouchableOpacity
                                 style={[styles.colBase, styles.colAction, styles.noBorder, styles.cellCenter]}
                                 onPress={() => onSetMain(file.id)}
@@ -118,10 +109,10 @@ const ComparisonTable: React.FC<ComparisonTableProps> = ({
             </View>
 
             <Text style={styles.footerNote}>
-                Zaznacz grupę "Baseline", aby zobaczyć różnice względem niej.
+                Select a "Baseline" group to see differences.
                 {'\n'}
-                <Text style={{color: '#10b981'}}>Zielony</Text> = szybciej,{' '}
-                <Text style={{color: '#ef4444'}}>Czerwony</Text> = wolniej.
+                <Text style={{color: '#10b981'}}>Green</Text> = faster,{' '}
+                <Text style={{color: '#ef4444'}}>Red</Text> = slower.
             </Text>
         </View>
     );
@@ -152,44 +143,38 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         borderBottomWidth: 2,
         borderBottomColor: '#e5e7eb',
-        backgroundColor: '#f9fafb', // Lekkie tło dla nagłówka
+        backgroundColor: '#f9fafb',
         borderTopLeftRadius: 8,
         borderTopRightRadius: 8,
     },
     row: {
         flexDirection: 'row',
-        alignItems: 'stretch', // Ważne dla pionowych linii
+        alignItems: 'stretch',
         borderBottomWidth: 1,
         borderBottomColor: '#f3f4f6',
     },
     rowMain: {
         backgroundColor: '#f0f9ff',
     },
-
-    // --- System Kolumn ---
     colBase: {
         paddingVertical: 12,
         paddingHorizontal: 4,
         borderRightWidth: 1,
-        borderRightColor: '#f3f4f6', // Delikatna linia pionowa
-        justifyContent: 'center', // Pionowe środkowanie
+        borderRightColor: '#f3f4f6',
+        justifyContent: 'center',
     },
     noBorder: {
         borderRightWidth: 0,
     },
-
-    // Szerokości (Flex) - Zmienione proporcje
-    colName: { flex: 2 },    // Było 3 -> teraz węższa
-    colValue: { flex: 2 },   // Bez zmian
-    colDiff: { flex: 2.5 },  // Trochę szerzej dla dwóch linii tekstu
-    colAction: { flex: 1 },  // Wąska kolumna akcji
-
-    // --- Wyrównanie zawartości w komórkach ---
+    colName: { flex: 2 },
+    colValue: { flex: 2 },
+    colDiff: { flex: 2.5 },
+    colAction: { flex: 1 },
     headerText: {
         fontWeight: '600',
         color: '#4b5563',
         fontSize: 12,
-        textAlign: 'center', // WYMUSZONE ŚRODKOWANIE NAGŁÓWKÓW
+        textAlign: 'center',
     },
     cellText: {
         fontSize: 13,
@@ -198,10 +183,7 @@ const styles = StyleSheet.create({
     cellLeft: { alignItems: 'flex-start', paddingLeft: 8 },
     cellRight: { alignItems: 'flex-end', paddingRight: 8 },
     cellCenter: { alignItems: 'center' },
-
     dash: { color: '#9ca3af' },
-
-    // Radio Button
     radioOuter: {
         width: 20,
         height: 20,

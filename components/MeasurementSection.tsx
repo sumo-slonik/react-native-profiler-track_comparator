@@ -4,7 +4,7 @@ import { FileCommitData, ProfilerFile } from '../types/FileEntry';
 import GroupNameInput from './GroupNameInput';
 import FilesList from './FilesList';
 import SectionChart from './SectionChart';
-import JsonFileInput from "../JsonFileInput";
+import JsonFileInput from "./JsonFileInput";
 import { AnalysisMode, MetricType } from './AnalysisModeMenu';
 import ComponentRankingList from './ComponentRankingList';
 
@@ -33,7 +33,6 @@ const MeasurementSection: React.FC<MeasurementSectionProps> = ({
                                                                    metricType,
                                                                    onRemoveSection,
                                                                    onClearFiles,
-                                                                   // [2] Destrukturyzacja
                                                                    isRemovable,
                                                                }) => {
     const itemWidth = (numColumns > 1
@@ -81,31 +80,30 @@ const MeasurementSection: React.FC<MeasurementSectionProps> = ({
 
                 <View style={styles.summaryWrapper}>
                     <View style={styles.summaryHeader}>
-                        <Text style={styles.summaryTitle}>Podsumowanie</Text>
+                        <Text style={styles.summaryTitle}>Summary</Text>
 
                         {hasFiles && (
                             <TouchableOpacity onPress={() => onClearFiles(index)}>
-                                <Text style={styles.clearFilesText}>Wgraj inne pliki</Text>
+                                <Text style={styles.clearFilesText}>Upload new files</Text>
                             </TouchableOpacity>
                         )}
                     </View>
 
                     {fileEntry.loadingError && (
                         <Text style={styles.errorText}>
-                            ❌ Błąd wczytywania: {fileEntry.loadingError}
+                            ❌ Loading error: {fileEntry.loadingError}
                         </Text>
                     )}
 
                     {hasFiles && !fileEntry.loadingError && (
                         <View style={styles.loadedInfo}>
                             <Text style={{ fontWeight: 'bold' }}>
-                                ✅ Wczytano: {fileEntry.fileNames.length} pomiar(y).
+                                ✅ Loaded: {fileEntry.fileNames.length} measurement(s).
                             </Text>
                             <FilesList fileEntry={fileEntry} />
                         </View>
                     )}
 
-                    {/* WYKRESY / RANKINGI */}
                     {fileEntry.averageSummary && (
                         analysisMode === 'total' ? (
                             <SectionChart fileEntry={fileEntry} />
@@ -151,12 +149,12 @@ const styles = StyleSheet.create({
         width: 32,
         height: 32,
         borderRadius: 16,
-        backgroundColor: '#fee2e2', // red-100
+        backgroundColor: '#fee2e2',
         justifyContent: 'center',
         alignItems: 'center',
     },
     removeSectionText: {
-        color: '#ef4444', // red-500
+        color: '#ef4444',
         fontWeight: 'bold',
         fontSize: 16,
     },
