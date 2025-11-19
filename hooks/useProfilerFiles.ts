@@ -1,6 +1,11 @@
 import { useState, useCallback, useEffect } from 'react';
 import { FileCommitData, FileStats, ProfilerFile } from '../types/FileEntry';
-import { aggregateCommitTimes, calculateAverageTimes } from '../utils/profilerUtils';
+import {
+    aggregateCommitTimes,
+    calculateAverageTimes,
+    calculateComponentStats,
+    extractComponentMap
+} from '../utils/profilerUtils';
 
 const createNewFileEntry = (id: number, index: number): FileCommitData => ({
     id,
@@ -14,6 +19,10 @@ const createNewFileEntry = (id: number, index: number): FileCommitData => ({
     },
     loadingError: null,
     fileStats: [],
+    availableComponentNames: [],
+    fiberActualDurationsTotal: new Map(),
+    fiberSelfDurationsTotal: new Map(),
+    componentMap: new Map(),
 });
 
 export const useProfilerFiles = () => {
@@ -67,6 +76,19 @@ export const useProfilerFiles = () => {
                     };
                 });
                 const averageSummary = calculateAverageTimes(dataArray);
+
+                const mergedComponentMap = new Map<number, string>();
+
+                dataArray.forEach((profilerFile) => {
+                    const fileMap = extractComponentMap(profilerFile);
+                    fileMap.forEach((name, id) => mergedComponentMap.set(id, name));
+                });
+
+                const sortedComponentNames = Array.from(new Set(mergedComponentMap.values())).sort();
+
+                const { fiberActualDurationsTotal, fiberSelfDurationsTotal } =
+                    calculateComponentStats(dataArray, mergedComponentMap);
+
                 newFiles[index] = {
                     ...newFiles[index],
                     fileNames: fileNames,
@@ -74,6 +96,10 @@ export const useProfilerFiles = () => {
                     averageSummary: averageSummary,
                     loadingError: null,
                     fileStats: fileStats,
+                    availableComponentNames: sortedComponentNames,
+                    componentMap: mergedComponentMap,
+                    fiberActualDurationsTotal: fiberActualDurationsTotal,
+                    fiberSelfDurationsTotal: fiberSelfDurationsTotal,
                 };
                 return newFiles;
             });
@@ -91,6 +117,8 @@ export const useProfilerFiles = () => {
                 profilerDataArray: [],
                 averageSummary: null,
                 fileStats: [],
+                fiberActualDurationsTotal: new Map(),
+                fiberSelfDurationsTotal: new Map(),
             };
             return newFiles;
         });

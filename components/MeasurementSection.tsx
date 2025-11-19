@@ -1,10 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, DimensionValue } from 'react-native'; // 1. Dodaj DimensionValue
+import { View, Text, StyleSheet, DimensionValue } from 'react-native';
 import { FileCommitData, ProfilerFile } from '../types/FileEntry';
 import GroupNameInput from './GroupNameInput';
 import FilesList from './FilesList';
 import SectionChart from './SectionChart';
 import JsonFileInput from "../JsonFileInput";
+import { AnalysisMode, MetricType } from './AnalysisModeMenu';
+import ComponentRankingList from './ComponentRankingList';
 
 interface MeasurementSectionProps {
     item: FileCommitData;
@@ -13,6 +15,8 @@ interface MeasurementSectionProps {
     onGroupNameChange: (newName: string, index: number) => void;
     onFilesLoaded: (dataArray: ProfilerFile[], fileNames: string[], index: number) => void;
     onError: (message: string, index: number) => void;
+    analysisMode: AnalysisMode;
+    metricType: MetricType;
 }
 
 const MeasurementSection: React.FC<MeasurementSectionProps> = ({
@@ -22,8 +26,10 @@ const MeasurementSection: React.FC<MeasurementSectionProps> = ({
                                                                    onGroupNameChange,
                                                                    onFilesLoaded,
                                                                    onError,
+                                                                   // [3] Destrukturyzacja
+                                                                   analysisMode,
+                                                                   metricType,
                                                                }) => {
-    // 2. Poprawiona linijka z rzutowaniem "as DimensionValue"
     const itemWidth = (numColumns > 1
         ? `${(100 / numColumns).toFixed(2)}%`
         : '100%') as DimensionValue;
@@ -68,7 +74,18 @@ const MeasurementSection: React.FC<MeasurementSectionProps> = ({
                         </View>
                     )}
 
-                    {fileEntry.averageSummary && <SectionChart fileEntry={fileEntry} />}
+                    {/* [4] Warunkowe renderowanie: Wykres vs Lista Komponentów */}
+                    {fileEntry.averageSummary && (
+                        analysisMode === 'total' ? (
+                            <SectionChart fileEntry={fileEntry} />
+                        ) : (
+
+                            <ComponentRankingList
+                        fileEntry={fileEntry}
+                        metricType={metricType}
+                        />
+                        )
+                        )}
                 </View>
             </View>
         </View>

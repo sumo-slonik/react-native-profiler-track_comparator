@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -7,11 +7,14 @@ import {
   FlatList,
   useWindowDimensions,
 } from 'react-native';
-import { useProfilerFiles } from './hooks/useProfilerFiles'; // Importujemy nasz nowy hook
+import { useProfilerFiles } from './hooks/useProfilerFiles';
 import MultiGroupComparisonChart from './components/MultiGroupComparisonChart';
 import MeasurementSection from './components/MeasurementSection';
 import MeasurementToggle from './components/MeasurementToggle';
 import DashboardControls from './components/DashboardControls';
+import ComparisonTable from './components/ComparisonTable';
+import AnalysisModeMenu, { AnalysisMode, MetricType } from './components/AnalysisModeMenu';
+import ComponentAnalysisTable from './components/ComponentAnalysisTable';
 
 const App: React.FC = () => {
   const {
@@ -23,11 +26,41 @@ const App: React.FC = () => {
     reportError,
   } = useProfilerFiles();
 
-  const [showMeasurementCount, setShowMeasurementCount] = useState(true);
-  const { width } = useWindowDimensions();
+  const [analysisMode, setAnalysisMode] = useState<AnalysisMode>('total');
+  const [metricType, setMetricType] = useState<MetricType>('actual');
+  const [selectedComponent, setSelectedComponent] = useState<string | null>(null);
 
+  const [showMeasurementCount, setShowMeasurementCount] = useState(true);
+  const [mainSectionId, setMainSectionId] = useState<number | null>(null);
+
+  const { width } = useWindowDimensions();
   const numColumns = width < 768 ? 1 : width < 1024 ? 2 : 3;
   const isDisabled = files.length <= 1;
+
+  useEffect(() => {
+    if (files.length > 0) {
+      const currentMainExists = files.some(f => f.id === mainSectionId);
+      if (!currentMainExists || mainSectionId === null) {
+        setMainSectionId(files[0].id);
+      }
+    }
+  }, [files, mainSectionId]);
+
+  const filteredComponentNames = useMemo(() => {
+    const nameSet = new Set<string>();
+
+    files.forEach(file => {
+      const mapToCheck = metricType === 'actual'
+          ? file.fiberActualDurationsTotal
+          : file.fiberSelfDurationsTotal;
+
+      for (const name of mapToCheck.keys()) {
+        nameSet.add(name);
+      }
+    });
+
+    return Array.from(nameSet).sort();
+  }, [files, metricType]);
 
   return (
       <ScrollView style={appStyles.container}>
@@ -39,6 +72,17 @@ const App: React.FC = () => {
         </View>
 
         <View style={appStyles.mainContent}>
+
+          <AnalysisModeMenu
+              mode={analysisMode}
+              onModeChange={setAnalysisMode}
+              metricType={metricType}
+              onMetricChange={setMetricType}
+              selectedComponent={selectedComponent}
+              componentList={filteredComponentNames}
+              onComponentChange={setSelectedComponent}
+          />
+
           <DashboardControls
               count={files.length}
               onAdd={addSection}
@@ -56,6 +100,8 @@ const App: React.FC = () => {
                       onGroupNameChange={updateGroupName}
                       onFilesLoaded={processLoadedFiles}
                       onError={reportError}
+                      analysisMode={analysisMode}
+                      metricType={metricType}
                   />
               )}
               keyExtractor={(item) => item.id.toString()}
@@ -64,15 +110,38 @@ const App: React.FC = () => {
               scrollEnabled={false}
           />
 
-          <MeasurementToggle
-              checked={showMeasurementCount}
-              onToggle={setShowMeasurementCount}
-          />
+          {/* [2] Logika warunkowa dla widoku wyników */}
 
-          <MultiGroupComparisonChart
-              files={files}
-              showMeasurementCount={showMeasurementCount}
-          />
+          {analysisMode === 'total' ? (
+              // --- WIDOK TOTAL ---
+              <>
+                <MeasurementToggle
+                    checked={showMeasurementCount}
+                    onToggle={setShowMeasurementCount}
+                />
+
+                <MultiGroupComparisonChart
+                    files={files}
+                    showMeasurementCount={showMeasurementCount}
+                />
+
+                <ComparisonTable
+                    files={files}
+                    mainSectionId={mainSectionId}
+                    onSetMain={setMainSectionId}
+                />
+              </>
+          ) : (
+
+              <ComponentAnalysisTable
+            files={files}
+            selectedComponent={selectedComponent}
+            metricType={metricType}
+            mainSectionId={mainSectionId}
+            onSetMain={setMainSectionId}
+            />
+            )}
+
         </View>
 
         <View style={appStyles.footer}>
