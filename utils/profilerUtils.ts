@@ -51,3 +51,66 @@ export const calculateAverageTimes = (
         totalPassiveEffectDuration: totalPassiveEffectDurationSum / count,
     };
 };
+
+export const extractComponentMap = (profilerData: ProfilerFile): Map<number, string> => {
+    const componentMap = new Map<number, string>();
+
+    profilerData.dataForRoots.forEach((root) => {
+        if (Array.isArray(root.snapshots)) {
+            root.snapshots.forEach((entry) => {
+                const id = entry[0];
+                const node = entry[1];
+
+                if (node && node.displayName) {
+                    componentMap.set(id, node.displayName);
+                }
+            });
+        }
+    });
+
+    return componentMap;
+};
+
+export const calculateComponentStats = (
+    profilerDataArray: ProfilerFile[],
+    componentMap: Map<number, string>
+) => {
+    const actualTotal = new Map<string, number>();
+    const selfTotal = new Map<string, number>();
+
+    const addTime = (
+        targetMap: Map<string, number>,
+        fiberId: number,
+        duration: number
+    ) => {
+        const name = componentMap.get(fiberId);
+        if (name) {
+            const currentTotal = targetMap.get(name) || 0;
+            targetMap.set(name, currentTotal + duration);
+        }
+    };
+
+    for (const file of profilerDataArray) {
+        for (const root of file.dataForRoots) {
+            for (const commit of root.commitData) {
+
+                if (commit.fiberActualDurations) {
+                    for (const [id, time] of commit.fiberActualDurations) {
+                        addTime(actualTotal, id, time);
+                    }
+                }
+
+                if (commit.fiberSelfDurations) {
+                    for (const [id, time] of commit.fiberSelfDurations) {
+                        addTime(selfTotal, id, time);
+                    }
+                }
+            }
+        }
+    }
+
+    return {
+        fiberActualDurationsTotal: actualTotal,
+        fiberSelfDurationsTotal: selfTotal,
+    };
+};
