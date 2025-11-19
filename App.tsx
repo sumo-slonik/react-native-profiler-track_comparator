@@ -29,8 +29,6 @@ const App: React.FC = () => {
   const [analysisMode, setAnalysisMode] = useState<AnalysisMode>('total');
   const [metricType, setMetricType] = useState<MetricType>('actual');
   const [selectedComponent, setSelectedComponent] = useState<string | null>(null);
-
-  const [showMeasurementCount, setShowMeasurementCount] = useState(true);
   const [mainSectionId, setMainSectionId] = useState<number | null>(null);
 
   const { width } = useWindowDimensions();
@@ -113,22 +111,15 @@ const App: React.FC = () => {
           {/* [2] Logika warunkowa dla widoku wyników */}
 
           {analysisMode === 'total' ? (
-              // --- WIDOK TOTAL ---
               <>
-                <MeasurementToggle
-                    checked={showMeasurementCount}
-                    onToggle={setShowMeasurementCount}
-                />
-
-                <MultiGroupComparisonChart
-                    files={files}
-                    showMeasurementCount={showMeasurementCount}
-                />
-
                 <ComparisonTable
                     files={files}
                     mainSectionId={mainSectionId}
                     onSetMain={setMainSectionId}
+                />
+
+                <MultiGroupComparisonChart
+                    files={files}
                 />
               </>
           ) : (
@@ -146,8 +137,7 @@ const App: React.FC = () => {
 
         <View style={appStyles.footer}>
           <Text style={appStyles.footerText}>
-            MVP: Analiza danych profilera React DevTools. Wszystkie obliczenia po
-            stronie klienta.
+            Implemented as part of RnD time at Software Mansion
           </Text>
         </View>
       </ScrollView>
