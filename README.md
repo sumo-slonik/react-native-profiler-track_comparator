@@ -4,7 +4,7 @@
 
 It helps developers identify performance bottlenecks by aggregating commit times, breaking down costs per component, and comparing different profiling sessions (e.g., "Before" vs. "After" optimization).
 
-### 🔗 **Live Demo:** [https://sumo-slonik.github.io/react-native-profiler-track_comparator/](https://sumo-slonik.github.io/react-native-profiler-track_comparator/)
+### 🔗 **[Live Demo](https://sumo-slonik.github.io/react-native-profiler-trace-comparator/):** 
 
 ---
 
@@ -32,7 +32,7 @@ It helps developers identify performance bottlenecks by aggregating commit times
 6.  *Tip: Repeat this process a few times to get multiple samples for better accuracy.*
 
 ### 2. Loading Data
-1.  Open the [Live Tool](https://sumo-slonik.github.io/react-native-profiler-track_comparator/).
+1.  Open the [[Live Tool](https://sumo-slonik.github.io/react-native-profiler-trace-comparator/)].
 2.  You will see an empty **Group**. You can rename it (e.g., "Version 1.0").
 3.  **Paste the content** of your JSON file into the input.
 4.  **💡 Pro Tip:** You can send **multiple files** into the same input field. The tool will process all of them and display the **average metrics** for that group.
