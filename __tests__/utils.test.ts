@@ -55,9 +55,7 @@ describe('profilerUtils', () => {
         it('correctly sums up Actual and Self durations for specific components', () => {
             const files = [mockFile1, mockFile2];
 
-            const componentMap = extractComponentMap(mockFile1);
-
-            const stats = calculateComponentStats(files, componentMap);
+            const stats = calculateComponentStats(files);
 
             expect(stats.fiberActualDurationsTotal.get('Button')).toBeCloseTo(13.5);
 
@@ -67,11 +65,9 @@ describe('profilerUtils', () => {
         });
 
         it('handles missing component names gracefully', () => {
-            // ZMIANA TUTAJ: Usunięto <number, string>
-            const emptyMap = new Map();
-            const stats = calculateComponentStats([mockFile1], emptyMap);
+            const stats = calculateComponentStats([mockFile1]);
 
-            expect(stats.fiberActualDurationsTotal.size).toBe(0);
+            expect(stats.fiberActualDurationsTotal.size).toBe(4);
         });
     });
 });

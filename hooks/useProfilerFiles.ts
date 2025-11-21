@@ -3,8 +3,7 @@ import { FileCommitData, FileStats, ProfilerFile } from '../types/FileEntry';
 import {
     aggregateCommitTimes,
     calculateAverageTimes,
-    calculateComponentStats,
-    extractComponentMap
+    calculateComponentStats, getUniqueComponentNames,
 } from '../utils/profilerUtils';
 
 const createNewFileEntry = (id: number, index: number): FileCommitData => ({
@@ -87,15 +86,11 @@ export const useProfilerFiles = () => {
 
                 const mergedComponentMap = new Map<number, string>();
 
-                dataArray.forEach((profilerFile) => {
-                    const fileMap = extractComponentMap(profilerFile);
-                    fileMap.forEach((name, id) => mergedComponentMap.set(id, name));
-                });
-
-                const sortedComponentNames = Array.from(new Set(mergedComponentMap.values())).sort();
+                const { mergedMap, sortedNames } = getUniqueComponentNames(dataArray);
 
                 const { fiberActualDurationsTotal, fiberSelfDurationsTotal } =
-                    calculateComponentStats(dataArray, mergedComponentMap);
+                    calculateComponentStats(dataArray);
+
 
                 newFiles[index] = {
                     ...newFiles[index],
@@ -104,7 +99,7 @@ export const useProfilerFiles = () => {
                     averageSummary: averageSummary,
                     loadingError: null,
                     fileStats: fileStats,
-                    availableComponentNames: sortedComponentNames,
+                    availableComponentNames: sortedNames,
                     componentMap: mergedComponentMap,
                     fiberActualDurationsTotal: fiberActualDurationsTotal,
                     fiberSelfDurationsTotal: fiberSelfDurationsTotal,
