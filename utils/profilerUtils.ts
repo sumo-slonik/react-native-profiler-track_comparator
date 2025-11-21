@@ -1,4 +1,4 @@
-import { ProfilerFile, AggregatedTimes } from "../types/FileEntry";
+import {ProfilerFile, AggregatedTimes, FileCommitData, SnapshotNode} from "../types/FileEntry";
 
 export const aggregateCommitTimes = (
     profilerData: ProfilerFile
