@@ -1,4 +1,4 @@
-import { ProfilerFile, AggregatedTimes } from "../types/FileEntry";
+import {ProfilerFile, AggregatedTimes, FileCommitData, SnapshotNode} from "../types/FileEntry";
 
 export const aggregateCommitTimes = (
     profilerData: ProfilerFile
@@ -71,38 +71,55 @@ export const extractComponentMap = (profilerData: ProfilerFile): Map<number, str
     return componentMap;
 };
 
+
+export const getUniqueComponentNames = (
+    profilerDataArray: ProfilerFile[]
+): { mergedMap: Map<number, string>, sortedNames: string[] } => {
+    const mergedMap = new Map<number, string>();
+    profilerDataArray.forEach((profilerFile) => {
+        const fileMap = extractComponentMap(profilerFile);
+        fileMap.forEach((name, id) => mergedMap.set(id, name));
+    });
+
+    const sortedNames = Array.from(new Set(mergedMap.values())).sort();
+
+    return { mergedMap, sortedNames };
+};
+
 export const calculateComponentStats = (
-    profilerDataArray: ProfilerFile[],
-    componentMap: Map<number, string>
+    profilerDataArray: ProfilerFile[]
 ) => {
     const actualTotal = new Map<string, number>();
     const selfTotal = new Map<string, number>();
 
-    const addTime = (
-        targetMap: Map<string, number>,
-        fiberId: number,
-        duration: number
-    ) => {
-        const name = componentMap.get(fiberId);
-        if (name) {
-            const currentTotal = targetMap.get(name) || 0;
-            targetMap.set(name, currentTotal + duration);
-        }
-    };
+    for (const profilerData of profilerDataArray) {
 
-    for (const file of profilerDataArray) {
-        for (const root of file.dataForRoots) {
+        const traceComponentMap = extractComponentMap(profilerData);
+
+        if (!profilerData.dataForRoots) {
+            continue;
+        }
+
+        for (const root of profilerData.dataForRoots) {
             for (const commit of root.commitData) {
 
                 if (commit.fiberActualDurations) {
                     for (const [id, time] of commit.fiberActualDurations) {
-                        addTime(actualTotal, id, time);
+                        const name = traceComponentMap.get(id);
+                        if (name) {
+                            const currentTotal = actualTotal.get(name) || 0;
+                            actualTotal.set(name, currentTotal + time);
+                        }
                     }
                 }
 
                 if (commit.fiberSelfDurations) {
                     for (const [id, time] of commit.fiberSelfDurations) {
-                        addTime(selfTotal, id, time);
+                        const name = traceComponentMap.get(id);
+                        if (name) {
+                            const currentTotal = selfTotal.get(name) || 0;
+                            selfTotal.set(name, currentTotal + time);
+                        }
                     }
                 }
             }
